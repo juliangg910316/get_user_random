@@ -4,16 +4,18 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 @Entity(tableName = "users")
 data class User(
     @PrimaryKey @ColumnInfo(name = "user_id") val userId: Int,
     @Embedded val id: Id,
     @Embedded val name : Name,
-    val location : String,
+    @Embedded val location : Location,
     val email : String,
     @Embedded val picture: Picture,
-    )
+    ) : Serializable
 
 data class Name (
     val title : String,
@@ -24,22 +26,30 @@ data class Name (
 }
 
 data class Coordinates (
-    val latitude  : String? = null,
-    val longitude : String? = null
+    val latitude  : String,
+    val longitude : String
 )
 
 data class TimeZone (
-    val offset  : String? = null,
-    val description : String? = null
+    val offset  : String,
+    val description : String
+)
+
+data class Street (
+    val number  : Int,
+    val name : String
 )
 
 data class Location (
-    val street      : String?,
-    val city        : String?,
-    val state       : String?,
-    val postcode    : Int,
-    //@Embedded val coordinates : Coordinates,
-    //@Embedded val timezone    : TimeZone
+    @Embedded(
+        prefix = "street_"
+    ) val street      : Street,
+    val city        : String,
+    val state       : String,
+    val country       : String,
+    val postcode    : String,
+    @Embedded val coordinates : Coordinates,
+    @Embedded val timezone    : TimeZone
 )
 
 data class Id (

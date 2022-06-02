@@ -1,5 +1,10 @@
 package dev.julian.minitestdspot.ui.screen
 
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +31,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.Pager
@@ -44,8 +50,8 @@ import dev.julian.minitestdspot.viewmodels.UserViewModel
 
 @Composable
 fun UserListScreen(navController: NavHostController, viewModel: UserViewModel = hiltViewModel()) {
-    val allUser : LazyPagingItems<User> = viewModel.searchUser("name,email,picture,id").collectAsLazyPagingItems()
-
+    val allUser : LazyPagingItems<User> = viewModel.searchUser("name,email,picture,id,location").collectAsLazyPagingItems()
+    val context = LocalContext.current
     LazyColumn(){
         items(
             items = allUser,
@@ -54,7 +60,7 @@ fun UserListScreen(navController: NavHostController, viewModel: UserViewModel = 
             }*/
         ){ user ->
             if (user != null)
-                UserRow(user, navController)
+                UserRow(user, context)
             Divider()
         }
     }
@@ -63,13 +69,14 @@ fun UserListScreen(navController: NavHostController, viewModel: UserViewModel = 
 }
 
 @Composable
-fun UserRow(user: User, navController: NavHostController) {
+fun UserRow(user: User, context : Context) {
     Row (
             modifier = Modifier
                 .height(80.dp)
                 .fillMaxWidth()
                 .clickable {
-                    navController.navigate(route = Screen.UserDetails.passUserId(user.id.value!!))
+                    //ContextCompat.startActivity(context, intentDisplayMap(user.location.coordinates.latitude,user.location.coordinates.longitude), null)
+                    ContextCompat.startActivity(context, intentDisplayMap(user), null)
                 },
             verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -101,4 +108,22 @@ fun UserRow(user: User, navController: NavHostController) {
 
 
     }
+}
+
+/*
+ * Display a map at a specified location and zoom level.
+ */
+private fun intentDisplayMap(latitude : String, longitude : String) : Intent {
+    val uriString = "geo:$latitude, $longitude?z=5"
+    return Intent(Intent.ACTION_VIEW, Uri.parse(uriString))
+}
+
+/*
+ * Search for locations or places, and display them on a map.
+ */
+private fun intentDisplayMap(user: User) : Intent {
+    val uriStringAddress = "geo:0,0?q="
+    val encodeString = "${user.location.street.number} ${user.location.street.name}, ${user.location.city}, ${user.location.state}, ${user.location.country}"
+    val uri = Uri.parse(uriStringAddress + Uri.encode(encodeString))
+    return Intent(Intent.ACTION_VIEW, uri)
 }
