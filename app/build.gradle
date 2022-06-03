@@ -56,7 +56,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.1.0")
     implementation "androidx.room:room-runtime:$rootProject.roomVersion"
     implementation "androidx.room:room-ktx:$rootProject.roomVersion"
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
     implementation("androidx.paging:paging-compose:1.0.0-alpha14")
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"

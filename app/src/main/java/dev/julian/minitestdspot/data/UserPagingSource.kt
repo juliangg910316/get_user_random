@@ -16,16 +16,20 @@ class UserPagingSource (private val service: UserService, private val query: Str
         // Start paging with the STARTING_KEY if this is the first load
         val start = params.key ?: STARTING_KEY
         // Load as many items as hinted by params.loadSize
-        //val range = start.until(start + params.loadSize)
+        val range = start.until(start + params.loadSize)
 
         return try {
             val response = service.loadUser(start, ITEMS_PER_PAGE, "123qweasd",query)
             Log.i("UserPagingSource", "load: result = ${response.results}")
             val users = response.results
+            Log.i("UserPagingSource", "nextKey: range = ${response.info.page}")
             LoadResult.Page(
                 data = users,
-                prevKey = if (start == STARTING_KEY) null else start - 1,
-                nextKey = if (start == response.info.page) null else start + 1
+                prevKey = when (start) {
+                    STARTING_KEY -> null
+                    else -> ensureValidKey(key = range.first - params.loadSize)
+                },
+                nextKey = response.info.page + 1
             )
         } catch (exception: Exception) {
             LoadResult.Error(exception)

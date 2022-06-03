@@ -18,16 +18,8 @@ fun NavGraph (navController: NavHostController) {
         startDestination = Screen.Home.route
     ) {
         composable(route = Screen.Home.route) {
-            UserListScreen(navController = navController)
+            UserListScreen()
         }
-        /*composable(
-            route = Screen.MovieDetails.route,
-            arguments = listOf(navArgument(USER_DETAILS_ARGUMENT_KEY) {
-                type = NavType.StringType
-            })
-        ) { backStackEntry ->
-            backStackEntry.arguments?.getString(USER_DETAILS_ARGUMENT_KEY)
-                ?.let { MovieDetailsScreen(it,navController) }
-        }*/
+
     }
 }

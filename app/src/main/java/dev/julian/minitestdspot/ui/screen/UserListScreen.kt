@@ -49,7 +49,7 @@ import dev.julian.minitestdspot.navigation.Screen
 import dev.julian.minitestdspot.viewmodels.UserViewModel
 
 @Composable
-fun UserListScreen(navController: NavHostController, viewModel: UserViewModel = hiltViewModel()) {
+fun UserListScreen(viewModel: UserViewModel = hiltViewModel()) {
     val allUser : LazyPagingItems<User> = viewModel.searchUser("name,email,picture,id,location").collectAsLazyPagingItems()
     val context = LocalContext.current
     LazyColumn(){
