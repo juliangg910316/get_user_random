@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val ITEMS_PER_PAGE = 50
+const val ITEMS_PER_PAGE = 50
 
 @HiltViewModel
 class UserViewModel @Inject constructor(private val repository: UserRepository) : ViewModel() {
