@@ -3,10 +3,14 @@ package dev.julian.minitestdspot.ui.screen
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -16,12 +20,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
@@ -30,8 +36,10 @@ import coil.request.ImageRequest
 import coil.size.Scale
 import dev.julian.minitestdspot.data.User
 import dev.julian.minitestdspot.viewmodels.UserViewModel
+import dev.julian.minitestdspot.R
 
 const val USER_LIST_TEST_TAG = "user_list_test_tag"
+const val TAG = "USER_LIST_SCREEN"
 
 @Composable
 fun UserListScreen(viewModel: UserViewModel = hiltViewModel()) {
@@ -43,15 +51,37 @@ fun UserListScreen(viewModel: UserViewModel = hiltViewModel()) {
 @Composable
 fun UserList(users : LazyPagingItems<User>) {
     LazyColumn(modifier = Modifier.testTag(USER_LIST_TEST_TAG)){
-        items(
-            items = users,
-            /*key = { user ->
-                user.pk
-            }*/
-        ){ user ->
+        items(users){ user ->
             if (user != null)
                 UserRow(user)
             Divider()
+        }
+
+        users.apply {
+            when {
+                loadState.refresh is LoadState.Loading -> {
+                    repeat(15) {
+                        item {
+                            Log.i(TAG, "UserList: loadState.refresh is LoadState.Loading")
+                            //CircularProgressIndicator()
+                            ShimmerAnimation()
+                            Divider()
+                        }
+                    }
+                }
+                loadState.append is LoadState.Loading -> {
+                    item {
+                        Log.i(TAG, "UserList: loadState.append is LoadState.Loading")
+                        CircularProgressIndicator()
+                    }
+                }
+                loadState.refresh is LoadState.Error -> {
+                    item { Log.i(TAG, "UserList: loadState.refresh is LoadState.Error") }
+                }
+                loadState.append is LoadState.Error -> {
+                    item { Log.i(TAG, "UserList: loadState.append is LoadState.Error") }
+                }
+            }
         }
     }
 }
@@ -64,7 +94,6 @@ fun UserRow(user: User) {
                 .height(80.dp)
                 .fillMaxWidth()
                 .clickable {
-                    //ContextCompat.startActivity(context, intentDisplayMap(user.location.coordinates.latitude,user.location.coordinates.longitude), null)
                     ContextCompat.startActivity(context, intentDisplayMap(user), null)
                 },
             verticalAlignment = Alignment.CenterVertically
@@ -77,7 +106,8 @@ fun UserRow(user: User) {
                         .crossfade(true)
                         .scale(Scale.FILL)
                         .build(),
-                    //placeholder = painterResource(R.drawable.placeholder),
+                    placeholder = painterResource(R.drawable.ic_baseline_person_outline_24),
+                    error = painterResource(R.drawable.ic_baseline_person_outline_24),
                     contentDescription = "Image",
                     contentScale = ContentScale.Fit,
                     alignment = Alignment.Center,
@@ -97,14 +127,6 @@ fun UserRow(user: User) {
 
 
     }
-}
-
-/*
- * Display a map at a specified location and zoom level.
- */
-private fun intentDisplayMap(latitude : String, longitude : String) : Intent {
-    val uriString = "geo:$latitude, $longitude?z=5"
-    return Intent(Intent.ACTION_VIEW, Uri.parse(uriString))
 }
 
 /*

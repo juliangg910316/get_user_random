@@ -48,10 +48,6 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
-    sourceSets {
-        androidTest.java.srcDirs += "src/test-common/java"
-        test.java.srcDirs += "src/test-common/java"
-    }
 
     testOptions {
         packagingOptions {
@@ -91,6 +87,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
     implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.json:json:20180813'
     androidTestImplementation "androidx.test.ext:junit:$androidXTestVersion"
     androidTestImplementation "androidx.test:runner:1.4.0"
     androidTestImplementation "androidx.test:rules:1.4.0"

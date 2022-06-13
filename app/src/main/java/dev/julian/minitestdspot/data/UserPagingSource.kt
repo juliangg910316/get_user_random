@@ -32,6 +32,7 @@ class UserPagingSource (private val service: UserService, private val query: Str
                 nextKey = response.info.page + 1
             )
         } catch (exception: Exception) {
+            Log.e("UserPagingSource", "load: exception = ${exception.message}" , exception );
             LoadResult.Error(exception)
         }
     }
