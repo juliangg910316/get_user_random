@@ -5,12 +5,11 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import dev.julian.minitestdspot.api.UserService
 import kotlin.math.max
-import kotlin.random.Random
 
 class UserPagingSource (private val service: UserService, private val query: String) : PagingSource<Int, User>() {
 
-    val ITEMS_PER_PAGE = 50
-    val STARTING_KEY = 1
+    private val ITEMS_PER_PAGE = 50
+    private val STARTING_KEY = 1
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, User> {
         // Start paging with the STARTING_KEY if this is the first load
@@ -32,7 +31,7 @@ class UserPagingSource (private val service: UserService, private val query: Str
                 nextKey = response.info.page + 1
             )
         } catch (exception: Exception) {
-            Log.e("UserPagingSource", "load: exception = ${exception.message}" , exception );
+            Log.e("UserPagingSource", "load: exception = ${exception.message}" , exception )
             LoadResult.Error(exception)
         }
     }
